@@ -3,9 +3,13 @@ project(WaterPipes)
 set(CMAKE_CXX_STANDARD 20)
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}/cmake")
 
-set(HEADER_FILES graph/api/Graph.h)
-set(SOURCE_FILES main.cpp graph/impl/Graph.cpp)
+add_subdirectory(hashing_strategy)
+
+set(INCLUDE_FILES hash_table/api/HashTable.h hash_table/api/HashTableIterator.h)
+set(SOURCE_FILES main.cpp hash_table/impl/HashTable.cpp hash_table/impl/HashTableIterator.cpp)
 add_executable(WaterPipes ${HEADER_FILES} ${SOURCE_FILES})
+
+target_link_libraries(${PROJECT_NAME} hashing_strategy)
 
 include(FindPkgConfig)
 find_package(GraphNode REQUIRED)
