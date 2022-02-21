@@ -13,6 +13,8 @@
 #include <memory>
 
 #include "GraphNode.h"
+#include "GraphNodeReachable.h"
+
 #include "../../hashing_strategy/api/HashingStrategy.h"
 
 static const double max_load_factor = 0.70; // Maximum load factor for open addressing tecnique
@@ -20,19 +22,25 @@ static const double max_load_factor = 0.70; // Maximum load factor for open addr
 template<typename T>
 class HashTable {
 public:
+    using TableType = std::vector<std::shared_ptr<GraphNodeReachable<T>>>;
+
     explicit HashTable(int bucketNo);
 
     HashTable(const std::map<T, std::vector<T>> &graphData, int numbersOfNodes);
 
+    typename TableType::iterator begin() { return table.begin(); }
+
+    typename TableType::iterator end() { return table.end(); }
+
     virtual ~HashTable();
 
-    int insert(std::shared_ptr<GraphNode<T>> graphNode);
+    int insert(std::shared_ptr<GraphNodeReachable<T>> graphNode);
 
     void insert(T nodeKey);
 
     void deleteByKey(T key);
 
-    std::shared_ptr<GraphNode<T>> getByKey(T key);
+    std::shared_ptr<GraphNodeReachable<T>> getByKey(T key);
 
     std::shared_ptr<GraphNode<T>> getByKey(T key, int &hashIndex);
 
@@ -46,7 +54,7 @@ public:
 
     int getSize() const;
 
-    std::shared_ptr<GraphNode<T>> operator[](int) const;
+    std::shared_ptr<GraphNodeReachable<T>> operator[](int) const;
 
     friend std::ostream &operator<<(std::ostream &os, const HashTable<T> &table) {
         os << "HashTable data: " << "capacity " << table.capacity << "; elements inserted " << table.size
@@ -78,7 +86,7 @@ public:
     }
 
 private:
-    std::shared_ptr<GraphNode<T>> *table;
+    TableType table;
     HashingStrategy<T> *hashingStrategy;
     int capacity;
     int size;

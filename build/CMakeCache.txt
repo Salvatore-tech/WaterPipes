@@ -25,7 +25,7 @@ CMAKE_AR:FILEPATH=/usr/bin/ar
 CMAKE_BUILD_TYPE:STRING=Debug
 
 //CXX compiler
-CMAKE_CXX_COMPILER:FILEPATH=/usr/bin/c++
+CMAKE_CXX_COMPILER:STRING=/usr/bin/c++
 
 //A wrapper around 'ar' adding the appropriate '--plugin' option
 // for the GCC compiler
@@ -51,7 +51,7 @@ CMAKE_CXX_FLAGS_RELEASE:STRING=-O3 -DNDEBUG
 CMAKE_CXX_FLAGS_RELWITHDEBINFO:STRING=-O2 -g -DNDEBUG
 
 //C compiler
-CMAKE_C_COMPILER:FILEPATH=/usr/bin/cc
+CMAKE_C_COMPILER:STRING=/usr/bin/cc
 
 //A wrapper around 'ar' adding the appropriate '--plugin' option
 // for the GCC compiler
@@ -212,9 +212,6 @@ GRAPHNODE_INCLUDE_DIR:PATH=/home/saso/CLionProjects/Libraries/graphnode/include
 //Path to a library.
 GRAPHNODE_LIBRARY:FILEPATH=/home/saso/CLionProjects/Libraries/graphnode/build/libgraphnode.a
 
-//The directory containing a CMake configuration file for GraphNode.
-GraphNode_DIR:PATH=GraphNode_DIR-NOTFOUND
-
 //Path to a file.
 IOGRAPH_INCLUDE_DIR:PATH=/home/saso/CLionProjects/Libraries/iograph/include
 
@@ -232,6 +229,15 @@ WaterPipes_IS_TOP_LEVEL:STATIC=ON
 
 //Value Computed by CMake
 WaterPipes_SOURCE_DIR:STATIC=/home/saso/CLionProjects/WaterPipes
+
+//Value Computed by CMake
+hashing_strategy_BINARY_DIR:STATIC=/home/saso/CLionProjects/WaterPipes/build/hashing_strategy
+
+//Value Computed by CMake
+hashing_strategy_IS_TOP_LEVEL:STATIC=OFF
+
+//Value Computed by CMake
+hashing_strategy_SOURCE_DIR:STATIC=/home/saso/CLionProjects/WaterPipes/hashing_strategy
 
 
 ########################
@@ -334,7 +340,7 @@ CMAKE_MODULE_LINKER_FLAGS_RELWITHDEBINFO-ADVANCED:INTERNAL=1
 //ADVANCED property for variable: CMAKE_NM
 CMAKE_NM-ADVANCED:INTERNAL=1
 //number of local generators
-CMAKE_NUMBER_OF_MAKEFILES:INTERNAL=1
+CMAKE_NUMBER_OF_MAKEFILES:INTERNAL=2
 //ADVANCED property for variable: CMAKE_OBJCOPY
 CMAKE_OBJCOPY-ADVANCED:INTERNAL=1
 //ADVANCED property for variable: CMAKE_OBJDUMP

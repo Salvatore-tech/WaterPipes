@@ -2,9 +2,11 @@
 #include <vector>
 #include <map>
 #include <InputOutputHandler.h>
-#include "graph/api/Graph.h"
+#include "hash_table/api/HashTable.h"
+#include "hash_table/api/HashTableIterator.h"
 
-static const char *const inputFileName = "input.txt";
+
+static const char *const inputFileName = "./resources/input.txt";
 
 int main() {
     std::map<int, std::vector<int>> inputFileGraphBuffer;
@@ -14,11 +16,16 @@ int main() {
     if (!fileMetadata.getOperationStatus())
         return -1;
 
-//    Graph graph = Graph<int>(inputFileGraphBuffer, fileMetadata.getNumberOfNodes());
+    HashTable hashTable = HashTable<int>(inputFileGraphBuffer, fileMetadata.getNumberOfNodes() * 2);
+    hashTable.insert(0);
 
-    Graph graph = Graph<int>();
-    graph.insert(std::make_shared<GraphNode<int>>(2));
+    auto tableIterator = HashTableIterator<int>(hashTable);
 
-    std::cout << "Hello, World!" << std::endl;
+    std::cout << hashTable << std::endl;
+
+    tableIterator.computeNotReachableNodes(0);
+//    std::cout<<"\n";
+//    tableIterator.computeNotReachableNodes(0);
+
     return 0;
 }
