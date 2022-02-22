@@ -16,7 +16,7 @@ int main() {
         return -1;
 
     HashTable hashTable = HashTable<int>(inputFileGraphBuffer, fileMetadata.getNumberOfNodes() * 2);
-    hashTable.insert(0);
+    hashTable.insert(0); // Insert the source
 
     std::cout << hashTable << std::endl;
 

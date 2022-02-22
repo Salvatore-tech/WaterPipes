@@ -15,8 +15,9 @@
 
 #include "GraphNode.h"
 #include "GraphNodeReachable.h"
-
-#include "../../hashing_strategy/api/HashingStrategy.h"
+#include "HashingStrategy.h"
+#include "LinearProbingStrategy.h"
+#include "DoubleHashingStrategy.h"
 
 static const double max_load_factor = 0.70; // Maximum load factor for open addressing tecnique
 
