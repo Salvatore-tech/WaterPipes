@@ -11,6 +11,7 @@
 #include <map>
 #include <iomanip>
 #include <memory>
+#include <set>
 
 #include "GraphNode.h"
 #include "GraphNodeReachable.h"
@@ -84,6 +85,14 @@ public:
             }
         return os;
     }
+
+    void dfs(T keyOfStartingNode);
+
+    std::set<std::shared_ptr<GraphNodeReachable<T>>> computeNotReachableNodes(T keyOfStartingNode);
+
+protected:
+    std::vector<std::shared_ptr<GraphNodeReachable<T>>>
+    getNotReachableNeighbours(const std::shared_ptr<GraphNodeReachable<T>> &source);
 
 private:
     TableType table;

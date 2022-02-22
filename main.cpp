@@ -3,7 +3,6 @@
 #include <map>
 #include <InputOutputHandler.h>
 #include "hash_table/api/HashTable.h"
-#include "hash_table/api/HashTableIterator.h"
 
 
 static const char *const inputFileName = "./resources/input.txt";
@@ -19,11 +18,9 @@ int main() {
     HashTable hashTable = HashTable<int>(inputFileGraphBuffer, fileMetadata.getNumberOfNodes() * 2);
     hashTable.insert(0);
 
-    auto tableIterator = HashTableIterator<int>(hashTable);
-
     std::cout << hashTable << std::endl;
 
-    tableIterator.computeNotReachableNodes(0);
+    hashTable.computeNotReachableNodes(0);
 //    std::cout<<"\n";
 //    tableIterator.computeNotReachableNodes(0);
 
