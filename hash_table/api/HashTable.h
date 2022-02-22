@@ -52,6 +52,8 @@ public:
 
     void addEdge(T sourceNodeKey, T targetNodeKey);
 
+    void addEdge(std::shared_ptr<GraphNode<T>> sourceNode, std::shared_ptr<GraphNode<T>> targetNode);
+
     void removeEdge(T sourceNodeKey, T targetNodeKey);
 
     int getSize() const;

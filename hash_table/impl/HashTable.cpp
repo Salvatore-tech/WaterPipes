@@ -110,7 +110,6 @@ bool HashTable<T>::findEdge(std::shared_ptr<GraphNode<T>> sourceNode, std::share
     return findEdge(sourceNode->key, targetNode->key);
 }
 
-
 template<typename T>
 void HashTable<T>::addEdge(T sourceNodeKey, T targetNodeKey) {
     auto sourceNode = getByKey(sourceNodeKey);
@@ -251,6 +250,14 @@ HashTable<T>::getNotReachableNeighbours(const std::shared_ptr<GraphNodeReachable
 
     notReachablesFromSourceNeighbours.erase(std::begin(notReachablesFromSourceNeighbours));
     return notReachablesFromSourceNeighbours;
+}
+
+template<typename T>
+void HashTable<T>::addEdge(std::shared_ptr<GraphNode<T>> sourceNode, std::shared_ptr<GraphNode<T>> targetNode) {
+    if (sourceNode.get() && targetNode.get()) {
+
+    }
+    sourceNode->addEdge(targetNode);
 }
 
 
