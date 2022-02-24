@@ -40,8 +40,6 @@ public:
 
     void insert(T nodeKey);
 
-    void deleteByKey(T key);
-
     std::shared_ptr<GraphNodeReachable<T>> getByKey(T key);
 
     std::shared_ptr<GraphNode<T>> getByKey(T key, int &hashIndex);

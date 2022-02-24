@@ -63,18 +63,6 @@ int HashTable<T>::insert(std::shared_ptr<GraphNodeReachable<T>> graphNode) {
     return hashIndex;
 }
 
-template<typename T>
-void HashTable<T>::deleteByKey(T key) {
-    int index = hashingStrategy->hashCode(key);
-    if (table[index].get()) {
-        table[index].reset();
-        size--;
-        loadFactor = (float) size / (float) capacity;
-        std::cout << "Node with key " << key << " erased\n";
-    } else
-        std::cout << "Could not delete node with key " << key << std::endl;
-}
-
 
 template<typename T>
 std::shared_ptr<GraphNodeReachable<T>> HashTable<T>::getByKey(T key) {
@@ -202,18 +190,16 @@ std::set<std::shared_ptr<GraphNodeReachable<T>>> HashTable<T>::computeNotReachab
     std::set<std::shared_ptr<GraphNodeReachable<T>>> notReachablesFromSource;
     for (auto &element: table) {
         auto observe = element.get();
-        if (observe && !observe->isReachable1())
+        if (observe && !observe->isReachable())
             notReachablesFromSource.insert(element);
     }
-
     for (const auto &notReachable: notReachablesFromSource) {
         auto neighbours = getNotReachableNeighbours(notReachable);
         if (!neighbours.empty())
             for (const auto &element: neighbours)
                 notReachablesFromSource.erase(element);
     }
-    const int edgeNumberToBuild = notReachablesFromSource.size();
-    std::cout << "\n You have to build " << edgeNumberToBuild << " edges to these nodes: ";
+    std::cout << "\n You have to build " << notReachablesFromSource.size() << " edges to these nodes: ";
     for (auto &it: notReachablesFromSource)
         std::cout << " " << it.get()->getKey();
     return notReachablesFromSource;
@@ -236,8 +222,7 @@ HashTable<T>::getNotReachableNeighbours(const std::shared_ptr<GraphNodeReachable
         auto currentGraphNode = stack.top();
         stack.pop();
         if (!visited[currentGraphNode->getKey()]) {
-            if (!currentGraphNode->isReachable1()) {
-                std::cout << currentGraphNode->getKey() << " ";
+            if (!currentGraphNode->isReachable()) {
                 visited[currentGraphNode->getKey()] = true;
                 notReachablesFromSourceNeighbours.emplace_back(currentGraphNode);
             }
