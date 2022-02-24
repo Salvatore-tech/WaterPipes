@@ -19,5 +19,5 @@ target_link_libraries(${PROJECT_NAME} ${IOGRAPH_LIBRARY})
 
 include(FindPkgConfig)
 find_package(HashingStrategy REQUIRED)
-include_directories(${HASHINGSTRATEGY_INCLUDE_DIR})
-target_link_libraries(${PROJECT_NAME} ${HASHINGSTRATEGY_LIBRARY})
+include_directories(${STRATEGY_INCLUDE_DIR})
+target_link_libraries(${PROJECT_NAME} ${STRATEGY_LIBRARY})

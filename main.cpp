@@ -31,6 +31,7 @@ int main() {
             case 2:
                 std::cout << "Insert source node key: ";
                 std::cin >> sourceNodeKey;
+                hashTable.dfs(sourceNodeKey);
                 break;
             case 3:
                 std::cout << "Insert source node key: ";
@@ -55,7 +56,7 @@ void displayMenu() {
     std::cout << "Choose an operation \n";
     std::cout << "1) Display graph \n";
     std::cout << "2) Depth First Search from source \n";
-    std::cout << "3) Find cities without water missing \n";
+    std::cout << "3) Find cities with missing water \n";
     std::cout << "4) Build missing links to cities that are not receiving water \n";
     std::cout << "0) Exit \n";
 }

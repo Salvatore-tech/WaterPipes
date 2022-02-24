@@ -46,7 +46,7 @@ HashTable<T>::HashTable(const std::map<T, std::vector<T>> &graphData, int number
 
 template<typename T>
 void HashTable<T>::insert(T nodeKey) {
-    if (insert(std::make_shared<GraphNodeReachable<T>>(nodeKey)))
+    if (insert(std::make_shared<GraphNodeReachable<T>>(nodeKey)) >= 0)
         std::cout << "Added node to the table with key = " << nodeKey << std::endl;
     else
         std::cout << "Could not add the node to the table with key = " << nodeKey << std::endl;
@@ -176,6 +176,8 @@ void HashTable<T>::dfs(T keyOfStartingNode) {
         return;
     }
 
+    std::cout << "Performing DFS from " << keyOfStartingNode << std::endl;
+
     stack.push(startingNode);
     while (!stack.empty()) {
         auto currentGraphNode = stack.top();
@@ -195,7 +197,6 @@ void HashTable<T>::dfs(T keyOfStartingNode) {
 
 template<typename T>
 std::set<std::shared_ptr<GraphNodeReachable<T>>> HashTable<T>::computeNotReachableNodes(T keyOfStartingNode) {
-
     dfs(keyOfStartingNode);
 
     std::set<std::shared_ptr<GraphNodeReachable<T>>> notReachablesFromSource;
@@ -211,10 +212,10 @@ std::set<std::shared_ptr<GraphNodeReachable<T>>> HashTable<T>::computeNotReachab
             for (const auto &element: neighbours)
                 notReachablesFromSource.erase(element);
     }
-    std::cout << "\n You have to build " << notReachablesFromSource.size() << " edges to these nodes: ";
+    const int edgeNumberToBuild = notReachablesFromSource.size();
+    std::cout << "\n You have to build " << edgeNumberToBuild << " edges to these nodes: ";
     for (auto &it: notReachablesFromSource)
         std::cout << " " << it.get()->getKey();
-
     return notReachablesFromSource;
 }
 
