@@ -6,6 +6,7 @@
 #include <map>
 #include <stack>
 #include <assert.h>
+#include <cstring>
 #include "../api/HashTable.h"
 
 template
@@ -185,20 +186,20 @@ void HashTable<T>::dfs(T keyOfStartingNode) {
 
 template<typename T>
 std::set<std::shared_ptr<GraphNodeReachable<T>>> HashTable<T>::computeNotReachableNodes(T keyOfStartingNode) {
-    dfs(keyOfStartingNode);
+    dfs(keyOfStartingNode); // O(V + E)
 
     std::set<std::shared_ptr<GraphNodeReachable<T>>> notReachablesFromSource;
-    for (auto &element: table) {
+    for (auto &element: table) { // O(V)
         auto observe = element.get();
         if (observe && !observe->isReachable())
             notReachablesFromSource.insert(element);
-    }
-    for (const auto &notReachable: notReachablesFromSource) {
-        auto neighbours = getNotReachableNeighbours(notReachable);
+    } // linear in V
+    for (const auto &notReachable: notReachablesFromSource) { // N loops
+        auto neighbours = getNotReachableNeighbours(notReachable); // V1 + E1
         if (!neighbours.empty())
-            for (const auto &element: neighbours)
-                notReachablesFromSource.erase(element);
-    }
+            for (const auto &element: neighbours)  // N1 loops
+                notReachablesFromSource.erase(element); // log(N1)
+    } // N * (V1 + E1) * N1 * log(N1)
     std::cout << "\n You have to build " << notReachablesFromSource.size() << " edges to these nodes: ";
     for (auto &it: notReachablesFromSource)
         std::cout << " " << it.get()->getKey();
@@ -244,6 +245,17 @@ void HashTable<T>::addEdge(std::shared_ptr<GraphNode<T>> sourceNode, std::shared
 
     }
     sourceNode->addEdge(targetNode);
+}
+
+template<typename T>
+void HashTable<T>::setHashingStrategy(char *strategy) {
+    if (strategy == nullptr || strcmp("linear", strategy) == 0) {
+        hashingStrategy = new LinearProbingStrategy<T>(size);
+        std::cout << "Using a linear probing hashing strategy" << std::endl;
+    } else {
+        hashingStrategy = new DoubleHashingStrategy<T>(size);
+        std::cout << "Using a double hashing strategy" << std::endl;
+    }
 }
 
 

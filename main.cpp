@@ -4,22 +4,24 @@
 #include <InputOutputHandler.h>
 #include "hash_table/api/HashTable.h"
 
-static const char *const inputFileName = "./resources/input.txt";
+static const char *const inputFileName = "./resources/input.txt"; // Input file name
 
 void displayMenu();
 
-int main() {
+int main(int argc, char **argv) {
     int choice = 0;
     int sourceNodeKey = -1;
-    std::map<int, std::vector<int>> inputFileGraphBuffer;
+    std::map<int, std::vector<int>> inputFileGraphBuffer; // Buffer that contains data from the input txt file
     auto inputOutputHandler = InputOutputHandler<int>();
-    auto fileMetadata = inputOutputHandler.readInputGraph(inputFileName, inputFileGraphBuffer);
+    auto fileMetadata = inputOutputHandler.readInputGraph(inputFileName, inputFileGraphBuffer); // Filling the buffer
 
-    if (!fileMetadata.getOperationStatus())
+    if (!fileMetadata.getOperationStatus()) // File read failed
         return -1;
 
-    HashTable hashTable = HashTable<int>(inputFileGraphBuffer, fileMetadata.getNumberOfNodes() * 2);
-    hashTable.insert(0); // Insert the source
+    HashTable hashTable = HashTable<int>(inputFileGraphBuffer, fileMetadata.getNumberOfNodes() *
+                                                               2); // Create the hash table and inserting data into it
+    hashTable.setHashingStrategy(argv[1]); // Setting the hashing strategy, by default is linear probing
+    hashTable.insert(0); // Insert the source node
 
     do {
         displayMenu();

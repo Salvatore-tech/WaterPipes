@@ -91,6 +91,8 @@ public:
 
     std::set<std::shared_ptr<GraphNodeReachable<T>>> computeNotReachableNodes(T keyOfStartingNode);
 
+    void setHashingStrategy(char *strategy);
+
 protected:
     std::vector<std::shared_ptr<GraphNodeReachable<T>>>
     getNotReachableNeighbours(const std::shared_ptr<GraphNodeReachable<T>> &source);
