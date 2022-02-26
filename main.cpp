@@ -4,7 +4,7 @@
 #include <InputOutputHandler.h>
 #include "hash_table/api/HashTable.h"
 
-static const char *const inputFileName = "./resources/input.txt"; // Input file name
+static const char *const inputFileName = "./resources/input0_2_2.txt"; // Input file name
 
 void displayMenu();
 
