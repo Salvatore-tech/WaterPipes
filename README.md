@@ -30,5 +30,23 @@ As we can see, the input graph is directed and unweighted, furthermore the sourc
     5. For each element {E} in {NRN}
         • Create an edge from source {S} to {E} 
   	   end loop   
+ ## Build and execution  
+The executable file is placed under PROJECT_ROOT/build.
+Perhaps, we can build project, by running cmake inside the PROJECT_ROOT to generate the Makefile and finally run make. 
+Then we can run the executable WaterPipes. Additionally, we can pass a parameter as command line argument to specify the hashing strategy we want to use between linear probing and double hashing (by default it uses the first one).  
+Ex.  
+    1. ./WaterPipes  
+    2. ./WaterPipes linear  
+    3. ./WaterPipes double  
+
+First of all, it will look for the input file under PROJECT_ROOT/resources called input0_2_2.txt and populate the data structure accordingly.
+Then the user can choose one of the following operations from the menu: 
+1) Display graph 
+2) Depth First Search from source 
+3) Find cities with missing water 
+4) Build missing links to cities that are not receiving water 
+0) Exit 
+       
+       
        
 Running the algorithm on the graph presented above, we're going to build 14 edges from the source node to these nodes:  2 4 7 8 9 10 16 17 18 19 20 21 22 23 in order to bring water in every city with the minimum number of pipes.
