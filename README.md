@@ -15,7 +15,7 @@ Assumptions:
 0 ≤ P ≤ 10000 	 # of existing water pipes  
 
 
-## Exemple of graph  
+## Example of graph  
 As we can see, the input graph is directed and unweighted, furthermore the source node (in red) has no outgoing edges.  
 <img src="https://github.com/Salvatore-tech/WaterPipes/blob/master/resources/input_graph.png" width="500" height="500">  
 
