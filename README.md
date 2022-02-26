@@ -25,7 +25,7 @@ As we can see, the input graph is directed and unweighted, furthermore the sourc
     3.  Compute the vector of not reachable nodes {V}: {N} - {R} (subtracting all the reachable nodes from the nodes of the graph)
     4.  For each not reachable node {NRN} in {V}
          •  Run a DFS(NRN) and the neighbours that are not reachable from source as well {NRNEIGH}
-         • Subtract the neighbours of the current node: {NRN} - {NRNEIGH} *
+         • Subtract the neighbours of the current node: {NRN} - {NRNEIGH}
    	    end loop
     5. For each element {E} in {NRN}
         • Create an edge from source {S} to {E} 
