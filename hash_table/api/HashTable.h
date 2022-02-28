@@ -28,7 +28,7 @@ public:
 
     explicit HashTable(int bucketNo);
 
-    HashTable(const std::map<T, std::vector<T>> &graphData, int numbersOfNodes);
+    void fillTable(const std::map<T, std::vector<T>> &graphData);
 
     typename TableType::iterator begin() { return table.begin(); }
 
