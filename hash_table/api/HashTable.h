@@ -26,7 +26,7 @@ class HashTable {
 public:
     using TableType = std::vector<std::shared_ptr<GraphNodeReachable<T>>>;
 
-    explicit HashTable(int bucketNo);
+    explicit HashTable(int capacity);
 
     void fillTable(const std::map<T, std::vector<T>> &graphData);
 

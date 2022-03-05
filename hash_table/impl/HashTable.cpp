@@ -233,8 +233,8 @@ HashTable<T>::getNotReachableNeighbours(const std::shared_ptr<GraphNodeReachable
                     stack.push(std::static_pointer_cast<GraphNodeReachable<T>>(observe));
             }
     }
-
-    notReachablesFromSourceNeighbours.erase(std::begin(notReachablesFromSourceNeighbours));
+    if (!notReachablesFromSourceNeighbours.empty())
+        notReachablesFromSourceNeighbours.erase(std::begin(notReachablesFromSourceNeighbours));
     return notReachablesFromSourceNeighbours;
 }
 
