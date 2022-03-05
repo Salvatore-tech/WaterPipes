@@ -5,6 +5,10 @@
 #include "hash_table/api/HashTable.h"
 
 static const char *const inputFileName = "./resources/input0_2_2.txt"; // Input file name
+static const char *const inputMiddleFileName = "./resources/input_graph100_400.txt"; // Input file name
+static const char *const inputBigFileName = "./resources/input_graph10k_50k.txt"; // Input file name
+static const char *const input_try = "./resources/input_try.txt"; // Input file name
+static const char *const sparse = "./resources/sparse.txt"; // Input file name
 
 void displayMenu();
 
@@ -13,7 +17,8 @@ int main(int argc, char **argv) {
     int sourceNodeKey = -1;
     std::map<int, std::vector<int>> inputFileGraphBuffer; // Buffer that contains data from the input txt file
     auto inputOutputHandler = InputOutputHandler<int>();
-    auto fileMetadata = inputOutputHandler.readInputGraph(inputFileName, inputFileGraphBuffer); // Filling the buffer
+    auto fileMetadata = inputOutputHandler.readInputGraph(inputBigFileName,
+                                                          inputFileGraphBuffer); // Filling the buffer
 
     if (!fileMetadata.getOperationStatus()) // File read failed
         return -1;

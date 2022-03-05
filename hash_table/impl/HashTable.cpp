@@ -8,6 +8,7 @@
 #include <assert.h>
 #include <cstring>
 #include "../api/HashTable.h"
+#include "../../ExecutionTimer.h"
 
 template
 class HashTable<int>; // Types of values stored into the hash table
@@ -25,7 +26,7 @@ void HashTable<T>::fillTable(const std::map<T, std::vector<T>> &graphData) {
     nodeCache.reserve(graphData.size());
 
     for (auto const&[keyOfTheNode, edgesOfTheNode]: graphData) {
-        int index = insert(std::make_shared<GraphNodeReachable<T>>(keyOfTheNode));
+        int index = insert(std::make_shared<GraphNode<T>>(keyOfTheNode));
         if (index >= 0)
             nodeCache.emplace_back(table[index]);
         else
@@ -46,14 +47,14 @@ void HashTable<T>::fillTable(const std::map<T, std::vector<T>> &graphData) {
 
 template<typename T>
 void HashTable<T>::insert(T nodeKey) {
-    if (insert(std::make_shared<GraphNodeReachable<T>>(nodeKey)) >= 0)
+    if (insert(std::make_shared<GraphNode<T>>(nodeKey)) >= 0)
         std::cout << "Added node to the table with key = " << nodeKey << std::endl;
     else
         std::cout << "Could not add the node to the table with key = " << nodeKey << std::endl;
 }
 
 template<typename T>
-int HashTable<T>::insert(std::shared_ptr<GraphNodeReachable<T>> graphNode) {
+int HashTable<T>::insert(std::shared_ptr<GraphNode<T>> graphNode) {
     int hashIndex = 0;
     if (getByKey(graphNode->key, hashIndex) && loadFactor < max_load_factor) // Avoid duplicate keys in the table
         return -1;
@@ -65,7 +66,7 @@ int HashTable<T>::insert(std::shared_ptr<GraphNodeReachable<T>> graphNode) {
 
 
 template<typename T>
-std::shared_ptr<GraphNodeReachable<T>> HashTable<T>::getByKey(T key) {
+std::shared_ptr<GraphNode<T>> HashTable<T>::getByKey(T key) {
     int hashIndex = hashingStrategy->hashCode(key);
     int iterationNo = 0;
 
@@ -132,7 +133,7 @@ void HashTable<T>::removeEdge(T sourceNodeKey, T targetNodeKey) {
 }
 
 template<typename T>
-std::shared_ptr<GraphNodeReachable<T>> HashTable<T>::operator[](int index) const {
+std::shared_ptr<GraphNode<T>> HashTable<T>::operator[](int index) const {
     if (index >= capacity) {
         std::cout << "Index out of bound" << std::endl;
     }
@@ -155,9 +156,10 @@ HashTable<T>::~HashTable() {
 
 template<typename T>
 void HashTable<T>::dfs(T keyOfStartingNode) {
-    std::vector<bool> visited(size, false);
-    std::stack<std::shared_ptr<GraphNodeReachable<T>>> stack;
+    std::map<T, bool> visited;
+    std::stack<std::shared_ptr<GraphNode<T>>> stack;
     auto startingNode = getByKey(keyOfStartingNode);
+    ExecutionTimer<std::chrono::milliseconds> timer;
 
     if (!startingNode) {
         std::cout << "The key inserted is invalid, could not perform the DFS\n";
@@ -170,24 +172,27 @@ void HashTable<T>::dfs(T keyOfStartingNode) {
     while (!stack.empty()) {
         auto currentGraphNode = stack.top();
         stack.pop();
-        if (!visited[currentGraphNode->getKey()]) {
+        if (!visited.contains(currentGraphNode->getKey())) {
             std::cout << currentGraphNode->getKey() << " ";
             visited[currentGraphNode->getKey()] = true;
-            currentGraphNode->setIsReachable(true);
+            currentGraphNode->setReachable(true);
         }
         for (const auto &edge: currentGraphNode->getEdges())
-            if (const auto observe = edge.lock()) {
-                if (!visited[observe->getKey()])
-                    stack.push(std::static_pointer_cast<GraphNodeReachable<T>>(observe));
+            if (!edge.expired()) {
+                auto observe = edge.lock();
+                if (!visited.contains(observe->getKey()))
+                    stack.push(observe);
             }
     }
+    timer.stop();
 }
 
 template<typename T>
-std::set<std::shared_ptr<GraphNodeReachable<T>>> HashTable<T>::computeNotReachableNodes(T keyOfStartingNode) {
+std::set<std::shared_ptr<GraphNode<T>>> HashTable<T>::computeNotReachableNodes(T keyOfStartingNode) {
+    ExecutionTimer<std::chrono::milliseconds> timer;
     dfs(keyOfStartingNode); // O(V + E)
 
-    std::set<std::shared_ptr<GraphNodeReachable<T>>> notReachablesFromSource;
+    std::set<std::shared_ptr<GraphNode<T>>> notReachablesFromSource;
     for (auto &element: table) { // O(V)
         auto observe = element.get();
         if (observe && !observe->isReachable())
@@ -202,15 +207,17 @@ std::set<std::shared_ptr<GraphNodeReachable<T>>> HashTable<T>::computeNotReachab
     std::cout << "\n You have to build " << notReachablesFromSource.size() << " edges to these nodes: ";
     for (auto &it: notReachablesFromSource)
         std::cout << " " << it.get()->getKey();
+    timer.stop();
     return notReachablesFromSource;
 }
 
 template<typename T>
-std::vector<std::shared_ptr<GraphNodeReachable<T>>>
-HashTable<T>::getNotReachableNeighbours(const std::shared_ptr<GraphNodeReachable<T>> &source) {
-    std::vector<std::shared_ptr<GraphNodeReachable<T>>> notReachablesFromSourceNeighbours;
-    std::stack<std::shared_ptr<GraphNodeReachable<T>>> stack;
-    std::vector<bool> visited(size, false);
+std::vector<std::shared_ptr<GraphNode<T>>>
+HashTable<T>::getNotReachableNeighbours(const std::shared_ptr<GraphNode<T>> &source) {
+    std::vector<std::shared_ptr<GraphNode<T>>> notReachablesFromSourceNeighbours;
+    std::stack<std::shared_ptr<GraphNode<T>>> stack;
+    std::map<T, bool> visited;
+
 
     if (!source.get() || !source->getKey()) {
         std::cout << "The key inserted is invalid, could not perform the DFS\n";
@@ -221,7 +228,7 @@ HashTable<T>::getNotReachableNeighbours(const std::shared_ptr<GraphNodeReachable
     while (!stack.empty()) {
         auto currentGraphNode = stack.top();
         stack.pop();
-        if (!visited[currentGraphNode->getKey()]) {
+        if (!visited.contains(currentGraphNode->getKey())) {
             if (!currentGraphNode->isReachable()) {
                 visited[currentGraphNode->getKey()] = true;
                 notReachablesFromSourceNeighbours.emplace_back(currentGraphNode);
@@ -229,8 +236,8 @@ HashTable<T>::getNotReachableNeighbours(const std::shared_ptr<GraphNodeReachable
         }
         for (const auto &edge: currentGraphNode->getEdges())
             if (const auto observe = edge.lock()) {
-                if (!visited[observe->getKey()])
-                    stack.push(std::static_pointer_cast<GraphNodeReachable<T>>(observe));
+                if (!visited.contains(currentGraphNode->getKey()))
+                    stack.push(observe);
             }
     }
     if (!notReachablesFromSourceNeighbours.empty())

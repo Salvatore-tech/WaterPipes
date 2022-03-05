@@ -1,6 +1,6 @@
 set(FIND_GRAPHNODE_PATHS ${CMAKE_CURRENT_SOURCE_DIR}/../Libraries/graphnode)
 
-find_path(GRAPHNODE_INCLUDE_DIR GraphNode.h GraphNodeReachable.h
+find_path(GRAPHNODE_INCLUDE_DIR GraphNode.h
         PATH_SUFFIXES include
         PATHS ${FIND_GRAPHNODE_PATHS})
 

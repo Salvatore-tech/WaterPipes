@@ -14,7 +14,6 @@
 #include <set>
 
 #include "GraphNode.h"
-#include "GraphNodeReachable.h"
 #include "HashingStrategy.h"
 #include "LinearProbingStrategy.h"
 #include "DoubleHashingStrategy.h"
@@ -24,7 +23,7 @@ static const double max_load_factor = 0.70; // Maximum load factor for open addr
 template<typename T>
 class HashTable {
 public:
-    using TableType = std::vector<std::shared_ptr<GraphNodeReachable<T>>>;
+    using TableType = std::vector<std::shared_ptr<GraphNode<T>>>;
 
     explicit HashTable(int capacity);
 
@@ -36,11 +35,11 @@ public:
 
     virtual ~HashTable();
 
-    int insert(std::shared_ptr<GraphNodeReachable<T>> graphNode);
+    int insert(std::shared_ptr<GraphNode<T>> graphNode);
 
     void insert(T nodeKey);
 
-    std::shared_ptr<GraphNodeReachable<T>> getByKey(T key);
+    std::shared_ptr<GraphNode<T>> getByKey(T key);
 
     std::shared_ptr<GraphNode<T>> getByKey(T key, int &hashIndex);
 
@@ -56,7 +55,7 @@ public:
 
     int getSize() const;
 
-    std::shared_ptr<GraphNodeReachable<T>> operator[](int) const;
+    std::shared_ptr<GraphNode<T>> operator[](int) const;
 
     friend std::ostream &operator<<(std::ostream &os, const HashTable<T> &table) {
         os << "HashTable data: " << "capacity " << table.capacity << "; elements inserted " << table.size
@@ -89,13 +88,13 @@ public:
 
     void dfs(T keyOfStartingNode);
 
-    std::set<std::shared_ptr<GraphNodeReachable<T>>> computeNotReachableNodes(T keyOfStartingNode);
+    std::set<std::shared_ptr<GraphNode<T>>> computeNotReachableNodes(T keyOfStartingNode);
 
     void setHashingStrategy(char *strategy);
 
 protected:
-    std::vector<std::shared_ptr<GraphNodeReachable<T>>>
-    getNotReachableNeighbours(const std::shared_ptr<GraphNodeReachable<T>> &source);
+    std::vector<std::shared_ptr<GraphNode<T>>>
+    getNotReachableNeighbours(const std::shared_ptr<GraphNode<T>> &source);
 
 private:
     TableType table;
