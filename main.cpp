@@ -3,12 +3,12 @@
 #include <map>
 #include <InputOutputHandler.h>
 #include "hash_table/api/HashTable.h"
+#include "ExecutionTimer.h"
 
-static const char *const inputFileName = "./resources/input0_2_2.txt"; // Input file name
-static const char *const inputMiddleFileName = "./resources/input_graph100_400.txt"; // Input file name
-static const char *const inputBigFileName = "./resources/input_graph10k_50k.txt"; // Input file name
-static const char *const input_try = "./resources/input_try.txt"; // Input file name
-static const char *const sparse = "./resources/sparse.txt"; // Input file name
+static const char *const inputFileName = "./resources/input0_2_2.txt"; // Input file name provided
+static const char *const inputGraph200x400 = "./resources/input_graph100_400.txt"; // Input file name within assumptions
+static const char *const inputGraphDense = "./resources/dense.txt"; // Input file name over assumptions given
+static const char *const inputGraphSparse = "./resources/sparse.txt"; // Input file name over assumptions given
 
 void displayMenu();
 
@@ -17,7 +17,8 @@ int main(int argc, char **argv) {
     int sourceNodeKey = -1;
     std::map<int, std::vector<int>> inputFileGraphBuffer; // Buffer that contains data from the input txt file
     auto inputOutputHandler = InputOutputHandler<int>();
-    auto fileMetadata = inputOutputHandler.readInputGraph(inputBigFileName,
+    ExecutionTimer<std::chrono::milliseconds> timer;
+    auto fileMetadata = inputOutputHandler.readInputGraph(inputFileName,
                                                           inputFileGraphBuffer); // Filling the buffer
 
     if (!fileMetadata.getOperationStatus()) // File read failed
@@ -28,7 +29,6 @@ int main(int argc, char **argv) {
     hashTable.setHashingStrategy(argv[1]); // Setting the hashing strategy, by default is linear probing
     hashTable.insert(0); // Insert the source node
     hashTable.fillTable(inputFileGraphBuffer); // Fill the table with the data in the buffer
-
     do {
         displayMenu();
         std::cin >> choice;

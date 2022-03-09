@@ -156,35 +156,37 @@ HashTable<T>::~HashTable() {
 
 template<typename T>
 void HashTable<T>::dfs(T keyOfStartingNode) {
-    std::map<T, bool> visited;
+    std::set<T> visited;
     std::stack<std::shared_ptr<GraphNode<T>>> stack;
-    auto startingNode = getByKey(keyOfStartingNode);
     ExecutionTimer<std::chrono::milliseconds> timer;
+    int tot = 1;
+    auto startingNode = getByKey(keyOfStartingNode);
 
     if (!startingNode) {
         std::cout << "The key inserted is invalid, could not perform the DFS\n";
         return;
     }
-
     std::cout << "Performing DFS from " << keyOfStartingNode << std::endl;
-
     stack.push(startingNode);
     while (!stack.empty()) {
         auto currentGraphNode = stack.top();
         stack.pop();
         if (!visited.contains(currentGraphNode->getKey())) {
-            std::cout << currentGraphNode->getKey() << " ";
-            visited[currentGraphNode->getKey()] = true;
+            std::cout << currentGraphNode->getKey() << " "; //TODO: TIMER DISCARD
+            visited.insert(currentGraphNode->getKey());
             currentGraphNode->setReachable(true);
         }
         for (const auto &edge: currentGraphNode->getEdges())
             if (!edge.expired()) {
                 auto observe = edge.lock();
-                if (!visited.contains(observe->getKey()))
+                if (!visited.contains(observe->getKey())) {
                     stack.push(observe);
+                    tot += 1;
+                }
             }
     }
-    timer.stop();
+
+    std::cout << "Elements in the stack: " << tot << std::endl;
 }
 
 template<typename T>
@@ -216,7 +218,7 @@ std::vector<std::shared_ptr<GraphNode<T>>>
 HashTable<T>::getNotReachableNeighbours(const std::shared_ptr<GraphNode<T>> &source) {
     std::vector<std::shared_ptr<GraphNode<T>>> notReachablesFromSourceNeighbours;
     std::stack<std::shared_ptr<GraphNode<T>>> stack;
-    std::map<T, bool> visited;
+    std::set<T> visited;
 
 
     if (!source.get() || !source->getKey()) {
@@ -230,13 +232,13 @@ HashTable<T>::getNotReachableNeighbours(const std::shared_ptr<GraphNode<T>> &sou
         stack.pop();
         if (!visited.contains(currentGraphNode->getKey())) {
             if (!currentGraphNode->isReachable()) {
-                visited[currentGraphNode->getKey()] = true;
+                visited.insert(currentGraphNode->getKey());
                 notReachablesFromSourceNeighbours.emplace_back(currentGraphNode);
             }
         }
         for (const auto &edge: currentGraphNode->getEdges())
             if (const auto observe = edge.lock()) {
-                if (!visited.contains(currentGraphNode->getKey()))
+                if (!visited.contains(observe->getKey()))
                     stack.push(observe);
             }
     }
