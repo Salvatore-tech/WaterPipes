@@ -6,9 +6,9 @@
 #include "ExecutionTimer.h"
 
 static const char *const inputFileName = "./resources/input0_2_2.txt"; // Input file name provided
-static const char *const inputGraph200x400 = "./resources/input_graph100_400.txt"; // Input file name within assumptions
 static const char *const inputGraphDense = "./resources/dense.txt"; // Input file name over assumptions given
-static const char *const inputGraphSparse = "./resources/sparse.txt"; // Input file name over assumptions given
+static const char *const inputGraphSuperSparseNoIsland = "./resources/superSparseNoIsland.txt"; // Input file name over assumptions given
+static const char *const inputGraphSuperSparseNoIsland90 = "./resources/superSparseNoIsland90.txt"; // Input file name over assumptions given
 
 void displayMenu();
 
@@ -18,17 +18,29 @@ int main(int argc, char **argv) {
     std::map<int, std::vector<int>> inputFileGraphBuffer; // Buffer that contains data from the input txt file
     auto inputOutputHandler = InputOutputHandler<int>();
     ExecutionTimer<std::chrono::milliseconds> timer;
-    auto fileMetadata = inputOutputHandler.readInputGraph(inputFileName,
+    auto fileMetadata = inputOutputHandler.readInputGraph(inputGraphDense,
                                                           inputFileGraphBuffer); // Filling the buffer
 
     if (!fileMetadata.getOperationStatus()) // File read failed
         return -1;
 
     HashTable hashTable = HashTable<int>(
-            fileMetadata.getNumberOfNodes() + 1); // Create the hash table
+            fileMetadata.getNumberOfNodes() * 2); // Create the hash table
     hashTable.setHashingStrategy(argv[1]); // Setting the hashing strategy, by default is linear probing
     hashTable.insert(0); // Insert the source node
     hashTable.fillTable(inputFileGraphBuffer); // Fill the table with the data in the buffer
+    timer.stop();
+
+//    std::cout << hashTable;
+
+    ExecutionTimer<std::chrono::milliseconds> timer1;
+    hashTable.dfs(0);
+    timer1.stop();
+
+    ExecutionTimer<std::chrono::milliseconds> timer2;
+    hashTable.computeNotReachableNodes(0);
+    timer2.stop();
+    return 0;
     do {
         displayMenu();
         std::cin >> choice;

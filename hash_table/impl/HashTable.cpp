@@ -172,7 +172,7 @@ void HashTable<T>::dfs(T keyOfStartingNode) {
         auto currentGraphNode = stack.top();
         stack.pop();
         if (!visited.contains(currentGraphNode->getKey())) {
-            std::cout << currentGraphNode->getKey() << " "; //TODO: TIMER DISCARD
+//            std::cout << currentGraphNode->getKey() << " "; //TODO: TIMER DISCARD
             visited.insert(currentGraphNode->getKey());
             currentGraphNode->setReachable(true);
         }
@@ -207,8 +207,8 @@ std::set<std::shared_ptr<GraphNode<T>>> HashTable<T>::computeNotReachableNodes(T
                 notReachablesFromSource.erase(element); // log(N1)
     } // N * (V1 + E1) * N1 * log(N1)
     std::cout << "\n You have to build " << notReachablesFromSource.size() << " edges to these nodes: ";
-    for (auto &it: notReachablesFromSource)
-        std::cout << " " << it.get()->getKey();
+//    for (auto &it: notReachablesFromSource) //TODO TIMER DISCARD
+//        std::cout << " " << it.get()->getKey();
     timer.stop();
     return notReachablesFromSource;
 }
@@ -220,8 +220,7 @@ HashTable<T>::getNotReachableNeighbours(const std::shared_ptr<GraphNode<T>> &sou
     std::stack<std::shared_ptr<GraphNode<T>>> stack;
     std::set<T> visited;
 
-
-    if (!source.get() || !source->getKey()) {
+    if (source == nullptr) {
         std::cout << "The key inserted is invalid, could not perform the DFS\n";
         return {};
     }
@@ -232,6 +231,7 @@ HashTable<T>::getNotReachableNeighbours(const std::shared_ptr<GraphNode<T>> &sou
         stack.pop();
         if (!visited.contains(currentGraphNode->getKey())) {
             if (!currentGraphNode->isReachable()) {
+//                currentGraphNode->setReachable(true);
                 visited.insert(currentGraphNode->getKey());
                 notReachablesFromSourceNeighbours.emplace_back(currentGraphNode);
             }
@@ -244,6 +244,9 @@ HashTable<T>::getNotReachableNeighbours(const std::shared_ptr<GraphNode<T>> &sou
     }
     if (!notReachablesFromSourceNeighbours.empty())
         notReachablesFromSourceNeighbours.erase(std::begin(notReachablesFromSourceNeighbours));
+
+//    timer.stop();
+
     return notReachablesFromSourceNeighbours;
 }
 
@@ -262,7 +265,7 @@ void HashTable<T>::setHashingStrategy(char *strategy) {
         std::cout << "Using a linear probing hashing strategy" << std::endl;
     } else {
         hashingStrategy = new DoubleHashingStrategy<T>(capacity);
-        std::cout << "Using a double hashing strategy" << std::endl;
+        std::cout << "Using a double hashing strategy with table size equal to " << capacity << std::endl;
     }
 }
 
