@@ -2,13 +2,17 @@
 #include <vector>
 #include <map>
 #include <InputOutputHandler.h>
+#include <cstring>
+#include <string.h>
 #include "hash_table/api/HashTable.h"
 #include "ExecutionTimer.h"
 
-static const char *const inputFileName = "./resources/input0_2_2.txt"; // Input file name provided
-static const char *const inputGraphDense = "./resources/dense.txt"; // Input file name over assumptions given
-static const char *const inputGraphSuperSparseNoIsland = "./resources/superSparseNoIsland.txt"; // Input file name over assumptions given
-static const char *const inputGraphSuperSparseNoIsland90 = "./resources/superSparseNoIsland90.txt"; // Input file name over assumptions given
+//static const char *const inputFileName = "./resources/input0_2_2.txt"; // Input file name provided
+//static const char *const inputGraphDense = "./resources/dense.txt"; // Input file name over assumptions given
+//static const char *const sparseSourceIsIsland = "./resources/sparseSourceIsIsland.txt"; // Input file name over assumptions given
+//static const char *const sparse50 = "./resources/sparse50.txt"; // Input file name over assumptions given
+//static const char *const mediumSparse = "./resources/mediumSparse.txt"; // Input file name over assumptions given
+//static const char *const inputGraphSuperSparseNoIsland90 = "./resources/superSparseNoIsland90.txt"; // Input file name over assumptions given
 
 void displayMenu();
 
@@ -17,30 +21,27 @@ int main(int argc, char **argv) {
     int sourceNodeKey = -1;
     std::map<int, std::vector<int>> inputFileGraphBuffer; // Buffer that contains data from the input txt file
     auto inputOutputHandler = InputOutputHandler<int>();
-    ExecutionTimer<std::chrono::milliseconds> timer;
-    auto fileMetadata = inputOutputHandler.readInputGraph(inputGraphDense,
+
+    if (argc < 2) {
+        std::cerr << "Usage: ./WaterPipes inputFileName.txt hashingStrategy[OPTIONAL}" << std::endl;
+        return -1;
+    }
+
+    char *relativePathToInputFile = static_cast<char *>(malloc(50 * sizeof(char)));
+    strcat(relativePathToInputFile, "./resources/");
+    strcat(relativePathToInputFile, argv[1]);
+    auto fileMetadata = inputOutputHandler.readInputGraph(relativePathToInputFile,
                                                           inputFileGraphBuffer); // Filling the buffer
 
     if (!fileMetadata.getOperationStatus()) // File read failed
         return -1;
 
     HashTable hashTable = HashTable<int>(
-            fileMetadata.getNumberOfNodes() * 2); // Create the hash table
-    hashTable.setHashingStrategy(argv[1]); // Setting the hashing strategy, by default is linear probing
+            fileMetadata.getNumberOfNodes() + 1); // Create the hash table
+    hashTable.setHashingStrategy(argv[2]); // Setting the hashing strategy, by default is linear probing
     hashTable.insert(0); // Insert the source node
     hashTable.fillTable(inputFileGraphBuffer); // Fill the table with the data in the buffer
-    timer.stop();
 
-//    std::cout << hashTable;
-
-    ExecutionTimer<std::chrono::milliseconds> timer1;
-    hashTable.dfs(0);
-    timer1.stop();
-
-    ExecutionTimer<std::chrono::milliseconds> timer2;
-    hashTable.computeNotReachableNodes(0);
-    timer2.stop();
-    return 0;
     do {
         displayMenu();
         std::cin >> choice;
@@ -52,6 +53,7 @@ int main(int argc, char **argv) {
                 std::cout << "Insert source node key: ";
                 std::cin >> sourceNodeKey;
                 hashTable.dfs(sourceNodeKey);
+                hashTable.resetReachbility();
                 break;
             case 3:
                 std::cout << "Insert source node key: ";
@@ -65,6 +67,7 @@ int main(int argc, char **argv) {
                 auto citiesWithoutWater = hashTable.computeNotReachableNodes(sourceNodeKey);
                 for (auto &city: citiesWithoutWater)
                     hashTable.addEdge(sourceNode, city);
+                std::cout << "\nAdded edges to connect all the cities to the source node" << std::endl;
                 break;
         }
     } while (choice != 0);

@@ -158,12 +158,11 @@ template<typename T>
 void HashTable<T>::dfs(T keyOfStartingNode) {
     std::set<T> visited;
     std::stack<std::shared_ptr<GraphNode<T>>> stack;
-    ExecutionTimer<std::chrono::milliseconds> timer;
     int tot = 1;
     auto startingNode = getByKey(keyOfStartingNode);
 
     if (!startingNode) {
-        std::cout << "The key inserted is invalid, could not perform the DFS\n";
+        std::cout << "The key " << keyOfStartingNode << " is invalid, could not perform the DFS\n";
         return;
     }
     std::cout << "Performing DFS from " << keyOfStartingNode << std::endl;
@@ -172,7 +171,6 @@ void HashTable<T>::dfs(T keyOfStartingNode) {
         auto currentGraphNode = stack.top();
         stack.pop();
         if (!visited.contains(currentGraphNode->getKey())) {
-//            std::cout << currentGraphNode->getKey() << " "; //TODO: TIMER DISCARD
             visited.insert(currentGraphNode->getKey());
             currentGraphNode->setReachable(true);
         }
@@ -185,13 +183,10 @@ void HashTable<T>::dfs(T keyOfStartingNode) {
                 }
             }
     }
-
-    std::cout << "Elements in the stack: " << tot << std::endl;
 }
 
 template<typename T>
 std::set<std::shared_ptr<GraphNode<T>>> HashTable<T>::computeNotReachableNodes(T keyOfStartingNode) {
-    ExecutionTimer<std::chrono::milliseconds> timer;
     dfs(keyOfStartingNode); // O(V + E)
 
     std::set<std::shared_ptr<GraphNode<T>>> notReachablesFromSource;
@@ -207,9 +202,8 @@ std::set<std::shared_ptr<GraphNode<T>>> HashTable<T>::computeNotReachableNodes(T
                 notReachablesFromSource.erase(element); // log(N1)
     } // N * (V1 + E1) * N1 * log(N1)
     std::cout << "\n You have to build " << notReachablesFromSource.size() << " edges to these nodes: ";
-//    for (auto &it: notReachablesFromSource) //TODO TIMER DISCARD
-//        std::cout << " " << it.get()->getKey();
-    timer.stop();
+    for (auto &it: notReachablesFromSource) //TODO: comment it if load testing
+        std::cout << " " << it.get()->getKey();
     return notReachablesFromSource;
 }
 
@@ -231,7 +225,6 @@ HashTable<T>::getNotReachableNeighbours(const std::shared_ptr<GraphNode<T>> &sou
         stack.pop();
         if (!visited.contains(currentGraphNode->getKey())) {
             if (!currentGraphNode->isReachable()) {
-//                currentGraphNode->setReachable(true);
                 visited.insert(currentGraphNode->getKey());
                 notReachablesFromSourceNeighbours.emplace_back(currentGraphNode);
             }
@@ -244,8 +237,6 @@ HashTable<T>::getNotReachableNeighbours(const std::shared_ptr<GraphNode<T>> &sou
     }
     if (!notReachablesFromSourceNeighbours.empty())
         notReachablesFromSourceNeighbours.erase(std::begin(notReachablesFromSourceNeighbours));
-
-//    timer.stop();
 
     return notReachablesFromSourceNeighbours;
 }
@@ -267,6 +258,13 @@ void HashTable<T>::setHashingStrategy(char *strategy) {
         hashingStrategy = new DoubleHashingStrategy<T>(capacity);
         std::cout << "Using a double hashing strategy with table size equal to " << capacity << std::endl;
     }
+}
+
+template<typename T>
+void HashTable<T>::resetReachbility() {
+    for (auto &element: table)
+        if (element)
+            element->setReachable(false);
 }
 
 

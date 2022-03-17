@@ -10,6 +10,18 @@
 #include <iostream>
 #include <sstream>
 
+/*
+    ExecutionTimer<std::chrono::milliseconds> timer1;
+    hashTable.dfs(197166);
+    timer1.stop();
+    hashTable.resetReachbility();
+
+    ExecutionTimer<std::chrono::milliseconds> timer2;
+    hashTable.computeNotReachableNodes(0);
+    timer2.stop();
+    return 0;
+ * */
+
 template<class Resolution = std::chrono::milliseconds>
 class ExecutionTimer {
 public:
@@ -34,8 +46,8 @@ public:
         const auto end = Clock::now();
         std::ostringstream strStream;
         strStream << "\n Stop Elapsed: "
-                  << std::chrono::duration_cast<Resolution>(end - mStart).count()
-                  << std::endl;
+                << std::chrono::duration_cast<Resolution>(end - mStart).count()
+                << std::endl;
         std::cout << strStream.str() << std::endl;
     }
 

@@ -92,6 +92,8 @@ public:
 
     void setHashingStrategy(char *strategy);
 
+    void resetReachbility();
+
 protected:
     std::vector<std::shared_ptr<GraphNode<T>>>
     getNotReachableNeighbours(const std::shared_ptr<GraphNode<T>> &source);
