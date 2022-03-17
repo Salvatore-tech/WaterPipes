@@ -2,17 +2,14 @@
 #include <vector>
 #include <map>
 #include <InputOutputHandler.h>
-#include <cstring>
-#include <string.h>
 #include "hash_table/api/HashTable.h"
-#include "ExecutionTimer.h"
 
-//static const char *const inputFileName = "./resources/input0_2_2.txt"; // Input file name provided
-//static const char *const inputGraphDense = "./resources/dense.txt"; // Input file name over assumptions given
-//static const char *const sparseSourceIsIsland = "./resources/sparseSourceIsIsland.txt"; // Input file name over assumptions given
-//static const char *const sparse50 = "./resources/sparse50.txt"; // Input file name over assumptions given
-//static const char *const mediumSparse = "./resources/mediumSparse.txt"; // Input file name over assumptions given
-//static const char *const inputGraphSuperSparseNoIsland90 = "./resources/superSparseNoIsland90.txt"; // Input file name over assumptions given
+/* GRAPH INPUT FILE DETAILS
+ * NAME                           : DESC
+ * fileProvided.txt               : input file provided, after running the algorithm 14 edges from the source need to be created: 2 4 7 8 9 10 16 17 18 19 20 21 22 23
+ * fileSparseGraph100k_300k.txt   : input file with 100 000 nodes and 300 000 edges, 90% of the nodes are connected to the source
+ * fileSparseGraph50k_50k.txt     : input file with 50 000 nodes and 50 000 edges, used for load testing in test case T1
+ * */
 
 void displayMenu();
 
@@ -21,15 +18,13 @@ int main(int argc, char **argv) {
     int sourceNodeKey = -1;
     std::map<int, std::vector<int>> inputFileGraphBuffer; // Buffer that contains data from the input txt file
     auto inputOutputHandler = InputOutputHandler<int>();
+    char *relativePathToInputFile = inputOutputHandler.getPathToInputFile(argv[1]);
 
-    if (argc < 2) {
-        std::cerr << "Usage: ./WaterPipes inputFileName.txt hashingStrategy[OPTIONAL}" << std::endl;
+    if (!relativePathToInputFile) {
+        std::cerr << "Usage: ./WaterPipes inputFileName.txt hashingStrategy[OPTIONAL]" << std::endl;
         return -1;
     }
 
-    char *relativePathToInputFile = static_cast<char *>(malloc(50 * sizeof(char)));
-    strcat(relativePathToInputFile, "./resources/");
-    strcat(relativePathToInputFile, argv[1]);
     auto fileMetadata = inputOutputHandler.readInputGraph(relativePathToInputFile,
                                                           inputFileGraphBuffer); // Filling the buffer
 
