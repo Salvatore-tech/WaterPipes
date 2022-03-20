@@ -22,24 +22,23 @@ HashTable<T>::HashTable(int capacity) : capacity{capacity} {
 
 template<typename T>
 void HashTable<T>::fillTable(const std::map<T, std::vector<T>> &graphData) {
-    std::vector<std::shared_ptr<GraphNode<T>>> nodeCache;
-    nodeCache.reserve(graphData.size());
+    std::vector<int> nodesIndexCache;
+    nodesIndexCache.reserve(graphData.size());
 
     for (auto const&[keyOfTheNode, edgesOfTheNode]: graphData) {
         int index = insert(std::make_shared<GraphNode<T>>(keyOfTheNode));
         if (index >= 0)
-            nodeCache.emplace_back(table[index]);
+            nodesIndexCache.emplace_back(index);
         else
             std::cerr << "Error when reading from graph buffer\n";
     }
 
-    assert(nodeCache.size() == graphData.size());
+    assert(nodesIndexCache.size() == graphData.size());
 
     int i = 0;
     for (auto const&[keyOfTheNode, edgesOfTheNode]: graphData) {
         for (auto const &edgeKey: edgesOfTheNode) {
-            auto ptr = getByKey(edgeKey);
-            nodeCache.at(i).get()->addEdge(ptr);
+            table[nodesIndexCache.at(i)]->addEdge(getByKey(edgeKey));
         }
         i++;
     }
@@ -56,7 +55,9 @@ void HashTable<T>::insert(T nodeKey) {
 template<typename T>
 int HashTable<T>::insert(std::shared_ptr<GraphNode<T>> graphNode) {
     int hashIndex = 0;
-    if (getByKey(graphNode->key, hashIndex) && loadFactor < max_load_factor) // Avoid duplicate keys in the table
+    if (loadFactor > max_load_factor) // Too many nodes
+        return -1;
+    if (getByKey(graphNode->key, hashIndex).get() != nullptr) // Avoid duplicate keys in the table
         return -1;
     size++;
     table[hashIndex] = graphNode;
@@ -191,19 +192,23 @@ std::set<std::shared_ptr<GraphNode<T>>> HashTable<T>::computeNotReachableNodes(T
 
     std::set<std::shared_ptr<GraphNode<T>>> notReachablesFromSource;
     for (auto &element: table) { // O(V)
-        auto observe = element.get();
-        if (observe && !observe->isReachable())
+        if (element && !element->isReachable())
             notReachablesFromSource.insert(element);
     } // linear in V
+    int loops = 0;
+    std::cout << "\n ** Not reachable nodes: " << notReachablesFromSource.size() << "/" << getSize() << std::endl;
+
     for (const auto &notReachable: notReachablesFromSource) { // N loops
-        auto neighbours = getNotReachableNeighbours(notReachable); // V1 + E1
+        loops++;
+        auto neighbours = getNotReachableNeighbours(notReachable); // O(V1 + E1)
         if (!neighbours.empty())
             for (const auto &element: neighbours)  // N1 loops
                 notReachablesFromSource.erase(element); // log(N1)
-    } // N * (V1 + E1) * N1 * log(N1)
+    } // O (V+E) +   if island => (N - (V1 + E1) * N1 * log(N1)
     std::cout << "\n You have to build " << notReachablesFromSource.size() << " edges to these nodes: ";
-    for (auto &it: notReachablesFromSource) //TODO: comment it if load testing
-        std::cout << " " << it.get()->getKey();
+//    for (auto &it: notReachablesFromSource) //TODO: comment it if load testing
+//        std::cout << " " << it.get()->getKey();
+    std::cout << "\n ** Loop No: " << loops << std::endl;
     return notReachablesFromSource;
 }
 
@@ -224,8 +229,8 @@ HashTable<T>::getNotReachableNeighbours(const std::shared_ptr<GraphNode<T>> &sou
         auto currentGraphNode = stack.top();
         stack.pop();
         if (!visited.contains(currentGraphNode->getKey())) {
-            if (!currentGraphNode->isReachable()) {
-                visited.insert(currentGraphNode->getKey());
+            visited.insert(currentGraphNode->getKey());
+            if (currentGraphNode && !currentGraphNode->isReachable()) {
                 notReachablesFromSourceNeighbours.emplace_back(currentGraphNode);
             }
         }
