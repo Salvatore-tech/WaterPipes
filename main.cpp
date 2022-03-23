@@ -2,7 +2,9 @@
 #include <vector>
 #include <map>
 #include <InputOutputHandler.h>
+#include <chrono>
 #include "hash_table/api/HashTable.h"
+#include "ExecutionTimer.h"
 
 /* GRAPH INPUT FILE DETAILS
  * NAME                           : DESC
@@ -32,10 +34,12 @@ int main(int argc, char **argv) {
         return -1;
 
     HashTable hashTable = HashTable<int>(
-            fileMetadata.getNumberOfNodes() + 1); // Create the hash table
+            fileMetadata.getNumberOfNodes() * 2); // Create the hash table
+
     hashTable.setHashingStrategy(argv[2]); // Setting the hashing strategy, by default is linear probing
-    hashTable.insert(0); // Insert the source node
+
     hashTable.fillTable(inputFileGraphBuffer); // Fill the table with the data in the buffer
+    hashTable.insert(0); // Insert the source node (if not inserted previously)
 
     do {
         displayMenu();

@@ -56,7 +56,10 @@ template<typename T>
 int HashTable<T>::insert(std::shared_ptr<GraphNode<T>> graphNode) {
     int hashIndex = 0;
     if (loadFactor > max_load_factor) // Too many nodes
+    {
+        std::cerr << "Graph size must be increased to insert more nodes\n";
         return -1;
+    }
     if (getByKey(graphNode->key, hashIndex).get() != nullptr) // Avoid duplicate keys in the table
         return -1;
     size++;
@@ -159,7 +162,6 @@ template<typename T>
 void HashTable<T>::dfs(T keyOfStartingNode) {
     std::set<T> visited;
     std::stack<std::shared_ptr<GraphNode<T>>> stack;
-    int tot = 1;
     auto startingNode = getByKey(keyOfStartingNode);
 
     if (!startingNode) {
@@ -180,7 +182,6 @@ void HashTable<T>::dfs(T keyOfStartingNode) {
                 auto observe = edge.lock();
                 if (!visited.contains(observe->getKey())) {
                     stack.push(observe);
-                    tot += 1;
                 }
             }
     }
