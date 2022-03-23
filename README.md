@@ -17,7 +17,7 @@ Assumptions:
 
 ## Example of graph  
 As we can see, the input graph is directed and unweighted, furthermore the source node (in red) has no outgoing edges.  
-<img src="https://github.com/Salvatore-tech/WaterPipes/blob/master/resources/input_graph.png" width="500" height="500">  
+<img src="https://github.com/Salvatore-tech/WaterPipes/blob/master/resources/graphAssigned.png" width="500" height="500">  
 
 ## Algorithm
     1. Initialize all the nodes of the graph {N} as not reachable
