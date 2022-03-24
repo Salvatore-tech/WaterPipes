@@ -16,7 +16,6 @@
 void displayMenu();
 
 int main(int argc, char **argv) {
-    int choice = 0;
     int sourceNodeKey = -1;
     std::map<int, std::vector<int>> inputFileGraphBuffer; // Buffer that contains data from the input txt file
     auto inputOutputHandler = InputOutputHandler<int>();
@@ -41,6 +40,7 @@ int main(int argc, char **argv) {
     hashTable.fillTable(inputFileGraphBuffer); // Fill the table with the data in the buffer
     hashTable.insert(0); // Insert the source node (if not inserted previously)
 
+    int choice = 0;
     do {
         displayMenu();
         std::cin >> choice;
