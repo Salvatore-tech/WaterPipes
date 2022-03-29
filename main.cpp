@@ -7,10 +7,11 @@
 #include "ExecutionTimer.h"
 
 /* GRAPH INPUT FILE DETAILS
- * NAME                           : DESC
- * fileProvided.txt               : input file provided, after running the algorithm 14 edges from the source need to be created: 2 4 7 8 9 10 16 17 18 19 20 21 22 23
- * fileSparseGraph100k_300k.txt   : input file with 100 000 nodes and 300 000 edges, 90% of the nodes are connected to the source
- * fileSparseGraph50k_50k.txt     : input file with 50 000 nodes and 50 000 edges, used for load testing in test case T1
+ * NAME               : DESC
+ * graphAssigned.txt  : input file provided, after running the algorithm 14 edges from the source need to be created: 2 4 7 8 9 10 16 17 18 19 20 21 22 23
+ * graphSparse5.txt   : input file with 100 000 nodes and 100 000 edges, 5% of the nodes are directly connected to the source
+ * graphSparse30.txt  : input file with 100 000 nodes and 100 000 edges, 30% of the nodes are directly connected to the source
+* graphDense.txt      : input file with 1000 nodes and 500 000 edges
  * */
 
 void displayMenu();

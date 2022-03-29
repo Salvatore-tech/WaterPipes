@@ -173,9 +173,10 @@ void HashTable<T>::dfs(T keyOfStartingNode) {
     while (!stack.empty()) {
         auto currentGraphNode = stack.top();
         stack.pop();
+        std::cout << " " << currentGraphNode->getKey() << std::endl; // TODO: comment if load testing
         if (!visited.contains(currentGraphNode->getKey())) {
             visited.insert(currentGraphNode->getKey());
-            currentGraphNode->setReachable(true);
+            currentGraphNode->setNodeStatus(reachable);
         }
         for (const auto &edge: currentGraphNode->getEdges())
             if (!edge.expired()) {
@@ -185,31 +186,33 @@ void HashTable<T>::dfs(T keyOfStartingNode) {
                 }
             }
     }
+    std::cout << "Visited " << visited.size() << " nodes" << std::endl;
+
 }
 
 template<typename T>
 std::set<std::shared_ptr<GraphNode<T>>> HashTable<T>::computeNotReachableNodes(T keyOfStartingNode) {
-    dfs(keyOfStartingNode); // O(V + E)
+    dfs(keyOfStartingNode);
 
     std::set<std::shared_ptr<GraphNode<T>>> notReachablesFromSource;
-    for (auto &element: table) { // O(V)
-        if (element && !element->isReachable())
+    for (auto &element: table) {
+        if (element && element->getNodeStatus() == unreachable)
             notReachablesFromSource.insert(element);
-    } // linear in V
-    int loops = 0;
+    }
     std::cout << "\n ** Not reachable nodes: " << notReachablesFromSource.size() << "/" << getSize() << std::endl;
 
-    for (const auto &notReachable: notReachablesFromSource) { // N loops
-        loops++;
-        auto neighbours = getNotReachableNeighbours(notReachable); // O(V1 + E1)
+    for (auto &notReachable: notReachablesFromSource) {
+        auto neighbours = getNotReachableNeighbours(notReachable);
         if (!neighbours.empty())
-            for (const auto &element: neighbours)  // N1 loops
-                notReachablesFromSource.erase(element); // log(N1)
-    } // O (V+E) +   if island => (N - (V1 + E1) * N1 * log(N1)
+            for (auto &element: neighbours)
+                notReachablesFromSource.erase(element);
+    }
+
     std::cout << "\n You have to build " << notReachablesFromSource.size() << " edges to these nodes: ";
-//    for (auto &it: notReachablesFromSource) //TODO: comment it if load testing
-//        std::cout << " " << it.get()->getKey();
-    std::cout << "\n ** Loop No: " << loops << std::endl;
+    for (auto &it: notReachablesFromSource) {
+        it->setNodeStatus(reachable); // Hydratating the status
+        std::cout << it.get()->getKey() << " "; //TODO: comment it if load testing
+    }
     return notReachablesFromSource;
 }
 
@@ -225,22 +228,32 @@ HashTable<T>::getNotReachableNeighbours(const std::shared_ptr<GraphNode<T>> &sou
         return {};
     }
 
+    int i = 0;
+    source->setNodeStatus(marked); // Marking the source node
+
     stack.push(source);
     while (!stack.empty()) {
+        i++;
         auto currentGraphNode = stack.top();
         stack.pop();
-        if (!visited.contains(currentGraphNode->getKey())) {
-            visited.insert(currentGraphNode->getKey());
-            if (currentGraphNode && !currentGraphNode->isReachable()) {
-                notReachablesFromSourceNeighbours.emplace_back(currentGraphNode);
+        visited.insert(currentGraphNode->getKey());
+        notReachablesFromSourceNeighbours.emplace_back(currentGraphNode);
+        if (i != 1)
+            currentGraphNode->setNodeStatus(reachable); // All the children of the marked parent node will be reachable
+
+        for (const auto &edge: currentGraphNode->getEdges()) {
+            if (auto observe = edge.lock()) {
+                if (observe->getNodeStatus() == unreachable) {
+                    stack.push(observe);
+                } else if (observe->getNodeStatus() == marked &&
+                           !visited.contains(observe->getKey())) { // Refreshing a previous marked node
+                    observe->setNodeStatus(reachable);
+                    notReachablesFromSourceNeighbours.emplace_back(observe);
+                }
             }
         }
-        for (const auto &edge: currentGraphNode->getEdges())
-            if (const auto observe = edge.lock()) {
-                if (!visited.contains(observe->getKey()))
-                    stack.push(observe);
-            }
     }
+
     if (!notReachablesFromSourceNeighbours.empty())
         notReachablesFromSourceNeighbours.erase(std::begin(notReachablesFromSourceNeighbours));
 
@@ -270,7 +283,7 @@ template<typename T>
 void HashTable<T>::resetReachbility() {
     for (auto &element: table)
         if (element)
-            element->setReachable(false);
+            element->setNodeStatus(unreachable);
 }
 
 
