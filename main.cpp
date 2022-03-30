@@ -3,7 +3,7 @@
 #include <map>
 #include <InputOutputHandler.h>
 #include <chrono>
-#include "hash_table/api/HashTable.h"
+#include "hashgraph/api/HashGraph.h"
 #include "ExecutionTimer.h"
 
 /* GRAPH INPUT FILE DETAILS
@@ -33,13 +33,13 @@ int main(int argc, char **argv) {
     if (!fileMetadata.getOperationStatus()) // File read failed
         return -1;
 
-    HashTable hashTable = HashTable<int>(
+    HashGraph hashGraph = HashGraph<int>(
             fileMetadata.getNumberOfNodes() * 2); // Create the hash table
 
-    hashTable.setHashingStrategy(argv[2]); // Setting the hashing strategy, by default is linear probing
+    hashGraph.setHashingStrategy(argv[2]); // Setting the hashing strategy, by default is linear probing
 
-    hashTable.fillTable(inputFileGraphBuffer); // Fill the table with the data in the buffer
-    hashTable.insert(0); // Insert the source node (if not inserted previously)
+    hashGraph.fillTable(inputFileGraphBuffer); // Fill the table with the data in the buffer
+    hashGraph.insert(0); // Insert the source node (if not inserted previously)
 
     int choice = 0;
     do {
@@ -47,26 +47,26 @@ int main(int argc, char **argv) {
         std::cin >> choice;
         switch (choice) {
             case 1:
-                std::cout << hashTable << std::endl;
+                std::cout << hashGraph << std::endl;
                 break;
             case 2:
                 std::cout << "Insert source node key: ";
                 std::cin >> sourceNodeKey;
-                hashTable.dfs(sourceNodeKey);
-                hashTable.resetReachbility();
+                hashGraph.dfs(sourceNodeKey);
+                hashGraph.resetReachbility();
                 break;
             case 3:
                 std::cout << "Insert source node key: ";
                 std::cin >> sourceNodeKey;
-                hashTable.computeNotReachableNodes(sourceNodeKey);
+                hashGraph.computeNotReachableNodes(sourceNodeKey);
                 break;
             case 4:
                 std::cout << "Insert source node key: ";
                 std::cin >> sourceNodeKey;
-                auto sourceNode = hashTable.getByKey(sourceNodeKey);
-                auto citiesWithoutWater = hashTable.computeNotReachableNodes(sourceNodeKey);
+                auto sourceNode = hashGraph.getByKey(sourceNodeKey);
+                auto citiesWithoutWater = hashGraph.computeNotReachableNodes(sourceNodeKey);
                 for (auto &city: citiesWithoutWater)
-                    hashTable.addEdge(sourceNode, city);
+                    hashGraph.addEdge(sourceNode, city);
                 std::cout << "\nAdded edges to connect all the cities to the source node" << std::endl;
                 break;
         }
